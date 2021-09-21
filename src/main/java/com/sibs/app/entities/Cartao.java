@@ -11,8 +11,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -30,10 +28,7 @@ public class Cartao implements Serializable {
 	private String numero;
 
 	@Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
-	private Instant createdAt;
-
-	@Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
-	private Instant updatedAt;
+	private Instant date;
 
 	@ManyToOne
 	@JsonIgnore
@@ -43,10 +38,11 @@ public class Cartao implements Serializable {
 	public Cartao() {
 	}
 
-	public Cartao(Long id, String numero, Banco banco) {
+	public Cartao(Long id, String numero, Instant date, Banco banco) {
 		this.id = id;
 		this.numero = numero;
 		this.banco = banco;
+		this.date = date;
 	}
 
 	public Long getId() {
@@ -61,14 +57,6 @@ public class Cartao implements Serializable {
 		return banco;
 	}
 
-	public Instant getCreatedAt() {
-		return createdAt;
-	}
-
-	public Instant getUpdatedAt() {
-		return updatedAt;
-	}
-
 	public void setId(Long id) {
 		this.id = id;
 	}
@@ -81,14 +69,12 @@ public class Cartao implements Serializable {
 		this.banco = banco;
 	}
 
-	@PrePersist
-	public void prePersist() {
-		this.createdAt = Instant.now();
+	public Instant getDate() {
+		return date;
 	}
 
-	@PreUpdate
-	public void preUpdate() {
-		this.updatedAt = Instant.now();
+	public void setDate(Instant date) {
+		this.date = date;
 	}
 
 	@Override

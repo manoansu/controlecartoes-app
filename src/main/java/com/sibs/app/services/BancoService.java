@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import javax.persistence.EntityNotFoundException;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
@@ -19,6 +20,7 @@ import com.sibs.app.services.exception.ObjectNotFoundException;
 @Service
 public class BancoService {
 
+	@Autowired
 	private BancoRepository repository;
 
 	@Transactional(readOnly = true)
@@ -72,7 +74,6 @@ public class BancoService {
 
 	private Banco copyElement(Banco banco, BancoDTO bancoDTO) {
 		banco.setName(bancoDTO.getName());
-		banco.setDate(bancoDTO.getDate());
 		banco.setNumber(bancoDTO.getNumber());
 		return banco;
 	}

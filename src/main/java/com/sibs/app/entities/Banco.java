@@ -11,6 +11,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 
 @Entity
@@ -28,7 +30,10 @@ public class Banco implements Serializable {
 	private String number;
 
 	@Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
-	private Instant date;
+	private Instant createdAt;
+
+	@Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
+	private Instant updatedAt;
 
 	@OneToMany(mappedBy = "banco")
 	Set<Cartao> cartoes = new HashSet<>();
@@ -36,11 +41,10 @@ public class Banco implements Serializable {
 	public Banco() {
 	}
 
-	public Banco(Long id, String name, String number, Instant date) {
+	public Banco(Long id, String name, String number) {
 		this.id = id;
 		this.name = name;
 		this.number = number;
-		this.date = date;
 	}
 
 	public Long getId() {
@@ -59,6 +63,14 @@ public class Banco implements Serializable {
 		return cartoes;
 	}
 
+	public Instant getCreatedAt() {
+		return createdAt;
+	}
+
+	public Instant getUpdatedAt() {
+		return updatedAt;
+	}
+
 	public void setId(Long id) {
 		this.id = id;
 	}
@@ -71,11 +83,13 @@ public class Banco implements Serializable {
 		this.number = number;
 	}
 
-	public Instant getDate() {
-		return date;
+	@PrePersist
+	public void prePersist() {
+		this.createdAt = Instant.now();
 	}
 
-	public void setDate(Instant date) {
-		this.date = date;
+	@PreUpdate
+	public void preUpdate() {
+		this.updatedAt = Instant.now();
 	}
 }

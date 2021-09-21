@@ -2,6 +2,7 @@ package com.sibs.app.resources;
 
 import java.net.URI;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
@@ -24,6 +25,7 @@ import com.sibs.app.services.BancoService;
 @RequestMapping(value = "/bancos")
 public class BancoResource {
 
+	@Autowired
 	private BancoService service;
 
 	@GetMapping(value = "/{id}")

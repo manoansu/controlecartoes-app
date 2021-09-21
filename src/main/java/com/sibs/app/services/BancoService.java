@@ -1,10 +1,13 @@
 package com.sibs.app.services;
 
-import java.util.List;
 import java.util.Optional;
 
+import javax.persistence.EntityNotFoundException;
+
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,8 +30,51 @@ public class BancoService {
 	}
 
 	@Transactional(readOnly = true)
-	public Page<BancoDTO> findAllPerPage(Pageable pageable) {
-		Page<Banco> list = repository.findAll(pageable);
+	public Page<BancoDTO> findAllPerPage(PageRequest pageRequest) {
+		Page<Banco> list = repository.findAll(pageRequest);
 		return list.map(dto -> new BancoDTO(dto));
 	}
+
+	@Transactional
+	public BancoDTO create(BancoDTO bancoDTO) {
+		Banco banco = new Banco();
+		banco = copyElement(banco, bancoDTO);
+		banco = repository.save(banco);
+		return new BancoDTO(banco);
+	}
+
+	@Transactional
+	public BancoDTO update(Long id, BancoDTO bancoDTO) {
+
+		try {
+			@SuppressWarnings("deprecation")
+			Banco banco = repository.getOne(id);
+			banco = copyElement(banco, bancoDTO);
+			banco = repository.save(banco);
+			return new BancoDTO(banco);
+		} catch (EntityNotFoundException e) {
+			throw new ObjectNotFoundException("Id not found! Id: " + id + ", Type: " + Banco.class.getName());
+		}
+	}
+
+	@Transactional
+	public void delete(Long id) {
+		try {
+			repository.deleteById(id);
+		} catch (EmptyResultDataAccessException e) {
+			throw new ObjectNotFoundException("Id not found! Id: " + id);
+		} catch (DataIntegrityViolationException e) {
+			throw new com.sibs.app.services.exception.DataIntegrityViolationException(
+					"Bank cannot be deleted! has associated object..");
+		}
+
+	}
+
+	private Banco copyElement(Banco banco, BancoDTO bancoDTO) {
+		banco.setName(bancoDTO.getName());
+		banco.setDate(bancoDTO.getDate());
+		banco.setNumber(bancoDTO.getNumber());
+		return banco;
+	}
+
 }
